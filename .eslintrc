@@ -1,0 +1,11 @@
+{
+  "extends": "seneca",
+  "rules": {
+    "quotes": ["error", "double"],
+    "indent": ["error", "tab"],
+    "no-magic-numbers": ["error", {
+      "ignore": [0, 1]
+    }],
+    "padded-blocks": 0
+  }
+}

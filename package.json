@@ -1,0 +1,38 @@
+{
+  "name": "zipkin-simple",
+  "version": "0.0.1",
+  "description": "A simple node.js client for zipkin tracing system",
+  "author": "Paolo Chiodi (https://github.com/paolochiodi)",
+  "license": "MIT",
+  "keywords": [
+    "seneca",
+    "zipkin",
+    "trace",
+    "tracer"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paolochiodi/zipkin-simple"
+  },
+  "main": "zipkin-simple.js",
+  "scripts": {
+    "test": "lab test/*.test.js -r console -L -t 78 -c -v",
+    "lint": "lab *.js -dL",
+    "coverage": "lab -v -P test -L -t 80 -r html > docs/coverage.html"
+  },
+  "pre-commit": "test",
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "dependencies": {
+    "request": "^2.74.0"
+  },
+  "devDependencies": {
+    "code": "^3.0.2",
+    "eslint-config-seneca": "^3.0.0",
+    "eslint-plugin-hapi": "^4.0.0",
+    "eslint-plugin-standard": "^2.0.0",
+    "lab": "^11.0.1",
+    "pre-commit": "^1.1.3"
+  }
+}
