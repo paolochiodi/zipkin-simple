@@ -1,5 +1,7 @@
 # zipkin-simple
 
+[![Build Status][travis-badge]][travis-url]
+
 > A simple node.js client for [zipkin](http://zipkin.io) tracing system
 
 
@@ -130,6 +132,7 @@ Add the `ss` to the current span (and trace).
 This is intended to be used on the server process when it has completed its operations and is about to send data back to the client.
 
 Both trace_data and annotation_data are mandatory.
+
 [For details about annotation_data see here](#annotation_data)
 
 ## License
@@ -141,3 +144,6 @@ MIT
 Maintainer - [Paolo Chiodi](https://github.com/paolochiodi)
 
 This project was kindly sponsored by [nearForm](http://nearform.com).
+
+[travis-badge]: https://travis-ci.org/paolochiodi/zipkin-simple.svg
+[travis-url]: https://travis-ci.org/paolochiodi/zipkin-simple
