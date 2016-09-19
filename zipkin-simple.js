@@ -8,6 +8,7 @@ var ID_LENGTH = 16
 var ID_DIGITS = "0123456789abcdef"
 
 var options = {
+	debug: false,
 	host: "127.0.0.1",
 	port: "9411",
 	path: "/api/v1/spans"
@@ -16,6 +17,10 @@ var options = {
 function send (body) {
 	const path = "http://" + options.host + ":" + options.port + options.path
 	Wreck.post(path, {payload: [body]}, function sent (err, response, body) {
+		if (!options.debug) {
+			return
+		}
+
 		if (err) {
 			return console.log("An error occurred sending trace data", err)
 		}
