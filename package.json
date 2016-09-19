@@ -34,5 +34,10 @@
     "eslint-plugin-standard": "^2.0.0",
     "lab": "^11.0.1",
     "pre-commit": "^1.1.3"
-  }
+  },
+  "files": [
+    "zipkin-simple.js",
+    "README.md",
+    "LICENSE"
+  ]
 }
