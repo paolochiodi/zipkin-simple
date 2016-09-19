@@ -151,5 +151,14 @@ module.exports = {
 	client_send: client_send,
 	client_recv: client_recv,
 	server_send: server_send,
-	server_recv: server_recv
+	server_recv: server_recv,
+
+	// camel case aliases
+
+	getData: get_data,
+	getChild: get_child,
+	clientSend: client_send,
+	clientRecv: client_recv,
+	serverSend: server_send,
+	serverRecv: server_recv
 }

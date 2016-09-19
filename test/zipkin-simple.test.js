@@ -50,6 +50,11 @@ describe("Zipkin client", function () {
 				done()
 			})
 
+			it("provides a camel case alias", function (done) {
+				expect(Client.get_data).to.equal(Client.getData)
+				done()
+			})
+
 		})
 
 		describe("get_child", function () {
@@ -82,6 +87,11 @@ describe("Zipkin client", function () {
 
 				expect(trace_data.sampled).to.be.false()
 
+				done()
+			})
+
+			it("provides a camel case alias", function (done) {
+				expect(Client.get_child).to.equal(Client.getChild)
 				done()
 			})
 
@@ -152,6 +162,11 @@ describe("Zipkin client", function () {
 
 			})
 
+			it("provides a camel case alias", function (done) {
+				expect(Client.client_send).to.equal(Client.clientSend)
+				done()
+			})
+
 		})
 
 		describe("client_recv", function () {
@@ -198,6 +213,11 @@ describe("Zipkin client", function () {
 					name: "test name"
 				})
 
+			})
+
+			it("provides a camel case alias", function (done) {
+				expect(Client.client_recv).to.equal(Client.clientRecv)
+				done()
 			})
 
 		})
@@ -248,6 +268,11 @@ describe("Zipkin client", function () {
 
 			})
 
+			it("provides a camel case alias", function (done) {
+				expect(Client.server_send).to.equal(Client.serverSend)
+				done()
+			})
+
 		})
 
 		describe("server_recv", function () {
@@ -294,6 +319,11 @@ describe("Zipkin client", function () {
 					name: "test name"
 				})
 
+			})
+
+			it("provides a camel case alias", function (done) {
+				expect(Client.server_recv).to.equal(Client.serverRecv)
+				done()
 			})
 
 		})
