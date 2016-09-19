@@ -1,6 +1,6 @@
 "use strict"
 
-const Lab = require("Lab")
+const Lab = require("lab")
 const Code = require("code")
 const Client = require("..")
 const FakeHttp = require("./fake-server")
