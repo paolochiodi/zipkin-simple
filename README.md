@@ -1,5 +1,6 @@
 # zipkin-simple
 
+[![npm version][npm-badge]][npm-url]
 [![Build Status][travis-badge]][travis-url]
 
 > A simple node.js client for [zipkin](http://zipkin.io) tracing system
@@ -145,5 +146,7 @@ Maintainer - [Paolo Chiodi](https://github.com/paolochiodi)
 
 This project was kindly sponsored by [nearForm](http://nearform.com).
 
+[npm-badge]: https://badge.fury.io/js/zipkin-simple.svg
+[npm-url]: https://badge.fury.io/js/zipkin-simple
 [travis-badge]: https://travis-ci.org/paolochiodi/zipkin-simple.svg
 [travis-url]: https://travis-ci.org/paolochiodi/zipkin-simple
