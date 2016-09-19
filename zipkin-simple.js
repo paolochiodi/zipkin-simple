@@ -1,5 +1,5 @@
 
-var Request = require("request")
+var Wreck = require("wreck")
 
 var HTTP_OK = 200
 var HTTP_RECEIVED = 202
@@ -15,12 +15,7 @@ var options = {
 
 function send (body) {
 	const path = "http://" + options.host + ":" + options.port + options.path
-	Request({
-		url: path,
-		method: "POST",
-		json: true,
-		body: [body]
-	}, function sent (err, response, body) {
+	Wreck.post(path, {payload: [body]}, function sent (err, response, body) {
 		if (err) {
 			return console.log("An error occurred sending trace data", err)
 		}
