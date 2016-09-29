@@ -8,10 +8,24 @@ var ID_LENGTH = 16
 var ID_DIGITS = "0123456789abcdef"
 
 var options = {
+	sampling: 0.1,
 	debug: false,
 	host: "127.0.0.1",
 	port: "9411",
 	path: "/api/v1/spans"
+}
+
+var counter = 0
+
+function should_sample () {
+	counter++
+
+	if (counter * options.sampling >= 1) {
+		counter = 0
+		return true
+	}
+
+	return false
 }
 
 function send (body) {
@@ -57,7 +71,7 @@ function create_root_trace () {
 		trace_id: id,
 		span_id: id,
 		parent_span_id: null,
-		sampled: true,
+		sampled: should_sample(),
 		timestamp: generate_timestamp()
 	}
 }
@@ -85,6 +99,10 @@ function get_child (trace_data) {
 }
 
 function send_trace (trace, data) {
+	if (!trace.sampled) {
+		return
+	}
+
 	var time = generate_timestamp()
 	var body = {
 		traceId: trace.trace_id,
@@ -115,6 +133,10 @@ function send_trace (trace, data) {
 }
 
 function trace_with_annotation (trace, data, annotation) {
+	if (!trace.sampled) {
+		return
+	}
+
 	data.annotations = data.annotations || []
 	data.annotations.push(annotation)
 	return send_trace(trace, data)

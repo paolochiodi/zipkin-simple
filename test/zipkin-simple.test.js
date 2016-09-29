@@ -13,7 +13,8 @@ const expect = Code.expect
 const FAKE_SERVER_PORT = 9090
 
 Client.options({
-	port: 9090
+	port: 9090,
+	sampling: 1
 })
 
 describe("Zipkin client", function () {
@@ -52,6 +53,18 @@ describe("Zipkin client", function () {
 
 			it("provides a camel case alias", function (done) {
 				expect(Client.get_data).to.equal(Client.getData)
+				done()
+			})
+
+			it("support sampling", function (done) {
+				Client.options({sampling: 0.5})
+
+				expect(Client.get_data().sampled).to.be.false()
+				expect(Client.get_data().sampled).to.be.true()
+				expect(Client.get_data().sampled).to.be.false()
+				expect(Client.get_data().sampled).to.be.true()
+
+				Client.options({sampling: 1})
 				done()
 			})
 
@@ -164,6 +177,19 @@ describe("Zipkin client", function () {
 
 			it("provides a camel case alias", function (done) {
 				expect(Client.client_send).to.equal(Client.clientSend)
+				done()
+			})
+
+			it("should not send data for not sampled traces", function (done) {
+				fakeHttp.on("request", function (data) {
+					done("Shouldn't receive data")
+				})
+
+				Client.client_send({sampled: false}, {
+					service: "test service",
+					name: "test name"
+				})
+
 				done()
 			})
 
