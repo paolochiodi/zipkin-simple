@@ -17,7 +17,7 @@ var options = {
 
 var counter = 0
 
-function should_sample () {
+function shouldSample () {
 	counter++
 
 	if (counter * options.sampling >= 1) {
@@ -45,12 +45,12 @@ function send (body) {
 	})
 }
 
-function generate_timestamp () {
+function generateTimestamp () {
 	// use process.hrtime?
 	return new Date().getTime() * TO_MILLISECONDS
 }
 
-function generate_id () {
+function generateId () {
 	// copied over from zipkin-js
 	var n = ""
 	for (var i = 0; i < ID_LENGTH; i++) {
@@ -64,57 +64,57 @@ function generate_id () {
 	return n
 }
 
-function create_root_trace () {
-	var id = generate_id()
+function createRootTrace () {
+	var id = generateId()
 
 	return {
-		trace_id: id,
-		span_id: id,
-		parent_span_id: null,
-		sampled: should_sample(),
-		timestamp: generate_timestamp()
+		traceId: id,
+		spanId: id,
+		parentSpanId: null,
+		sampled: shouldSample(),
+		timestamp: generateTimestamp()
 	}
 }
 
-function get_data (trace_data) {
-	if (!trace_data) {
-		return create_root_trace()
+function getData (traceData) {
+	if (!traceData) {
+		return createRootTrace()
 	}
 
-	return trace_data
+	return traceData
 }
 
-function get_child (trace_data) {
-	if (!trace_data) {
-		return create_root_trace()
+function getChild (traceData) {
+	if (!traceData) {
+		return createRootTrace()
 	}
 
 	return {
-		trace_id: trace_data.trace_id,
-		parent_span_id: trace_data.span_id,
-		span_id: generate_id(),
-		sampled: trace_data.sampled,
-		timestamp: generate_timestamp()
+		traceId: traceData.traceId,
+		parentSpanId: traceData.spanId,
+		spanId: generateId(),
+		sampled: traceData.sampled,
+		timestamp: generateTimestamp()
 	}
 }
 
-function send_trace (trace, data) {
+function sendTrace (trace, data) {
 	if (!trace.sampled) {
 		return
 	}
 
-	var time = generate_timestamp()
+	var time = generateTimestamp()
 	var body = {
-		traceId: trace.trace_id,
+		traceId: trace.traceId,
 		name: data.name,
-		id: trace.span_id,
+		id: trace.spanId,
 		timestamp: trace.timestamp,
 		annotations: [],
 		binaryAnnotations: []
 	}
 
-	if (trace.parent_span_id) {
-		body.parentId = trace.parent_span_id
+	if (trace.parentSpanId) {
+		body.parentId = trace.parentSpanId
 	}
 
 	for (var i = 0; i < data.annotations.length; i++) {
@@ -132,33 +132,33 @@ function send_trace (trace, data) {
 	send(body)
 }
 
-function trace_with_annotation (trace, data, annotation) {
+function traceWithAnnotation (trace, data, annotation) {
 	if (!trace.sampled) {
 		return
 	}
 
 	data.annotations = data.annotations || []
 	data.annotations.push(annotation)
-	return send_trace(trace, data)
+	return sendTrace(trace, data)
 }
 
-function client_send (trace, data) {
-	return trace_with_annotation(trace, data, "cs")
+function clientSend (trace, data) {
+	return traceWithAnnotation(trace, data, "cs")
 }
 
-function client_recv (trace, data) {
-	return trace_with_annotation(trace, data, "cr")
+function clientRecv (trace, data) {
+	return traceWithAnnotation(trace, data, "cr")
 }
 
-function server_send (trace, data) {
-	return trace_with_annotation(trace, data, "ss")
+function serverSend (trace, data) {
+	return traceWithAnnotation(trace, data, "ss")
 }
 
-function server_recv (trace, data) {
-	return trace_with_annotation(trace, data, "sr")
+function serverRecv (trace, data) {
+	return traceWithAnnotation(trace, data, "sr")
 }
 
-function set_options (opts) {
+function setOptions (opts) {
 	if (opts) {
 		Object.assign(options, opts)
 	}
@@ -167,20 +167,22 @@ function set_options (opts) {
 }
 
 module.exports = {
-	options: set_options,
-	get_data: get_data,
-	get_child: get_child,
-	client_send: client_send,
-	client_recv: client_recv,
-	server_send: server_send,
-	server_recv: server_recv,
+	options: setOptions,
 
-	// camel case aliases
+	getData: getData,
+	getChild: getChild,
+	clientSend: clientSend,
+	clientRecv: clientRecv,
+	serverSend: serverSend,
+	serverRecv: serverRecv,
 
-	getData: get_data,
-	getChild: get_child,
-	clientSend: client_send,
-	clientRecv: client_recv,
-	serverSend: server_send,
-	serverRecv: server_recv
+
+	// underscore aliases
+
+	get_data: getData,
+	get_child: getChild,
+	client_send: clientSend,
+	client_recv: clientRecv,
+	server_send: serverSend,
+	server_recv: serverRecv
 }

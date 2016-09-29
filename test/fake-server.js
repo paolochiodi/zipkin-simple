@@ -3,7 +3,7 @@ const Http = require("http")
 const EventEmitter = require("events")
 
 
-function fake_server () {
+function fakeServer () {
 	const fake = new EventEmitter()
 	const server = Http.createServer(function (req, res) {
 		const body = []
@@ -15,7 +15,7 @@ function fake_server () {
 		req.on("end", function () {
 			const content = JSON.parse(Buffer.concat(body).toString("utf8"))
 
-			fake.last_request = {
+			fake.lastRequest = {
 				url: req.url,
 				body: content
 			}
@@ -23,14 +23,14 @@ function fake_server () {
 			res.statusCode = 200
 			res.end()
 
-			fake.emit("request", fake.last_request)
+			fake.emit("request", fake.lastRequest)
 		})
 	})
 
 	server.listen.apply(server, arguments)
 
 	fake.reset = function () {
-		fake.last_request = null
+		fake.lastRequest = null
 		fake.removeAllListeners("request")
 	}
 
@@ -44,4 +44,4 @@ function fake_server () {
 	return fake
 }
 
-module.exports = fake_server
+module.exports = fakeServer

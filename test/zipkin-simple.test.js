@@ -21,20 +21,20 @@ describe("Zipkin client", function () {
 
 	describe("Trace data manipulation", function () {
 
-		describe("get_data", function () {
+		describe("getData", function () {
 
 			it("should return same data", function (done) {
-				var trace_data = Client.get_data({
-					trace_id: "test trace_id",
-					span_id: "test span_id",
-					parent_span_id: "test parent_id",
+				var traceData = Client.getData({
+					traceId: "test traceId",
+					spanId: "test spanId",
+					parentSpanId: "test parent_id",
 					sampled: true
 				})
 
-				expect(trace_data).to.include({
-					trace_id: "test trace_id",
-					span_id: "test span_id",
-					parent_span_id: "test parent_id",
+				expect(traceData).to.include({
+					traceId: "test traceId",
+					spanId: "test spanId",
+					parentSpanId: "test parent_id",
 					sampled: true
 				})
 
@@ -42,16 +42,16 @@ describe("Zipkin client", function () {
 			})
 
 			it("should create a new trace if no data is passed", function (done) {
-				var trace_data = Client.get_data()
+				var traceData = Client.getData()
 
-				expect(trace_data).to.include(["trace_id", "span_id", "parent_span_id", "sampled", "timestamp"])
-				expect(trace_data.parent_span_id).to.be.null()
-				expect(trace_data.trace_id).to.equal(trace_data.span_id)
+				expect(traceData).to.include(["traceId", "spanId", "parentSpanId", "sampled", "timestamp"])
+				expect(traceData.parentSpanId).to.be.null()
+				expect(traceData.traceId).to.equal(traceData.spanId)
 
 				done()
 			})
 
-			it("provides a camel case alias", function (done) {
+			it("provides a underscore alias", function (done) {
 				expect(Client.get_data).to.equal(Client.getData)
 				done()
 			})
@@ -59,10 +59,10 @@ describe("Zipkin client", function () {
 			it("support sampling", function (done) {
 				Client.options({sampling: 0.5})
 
-				expect(Client.get_data().sampled).to.be.false()
-				expect(Client.get_data().sampled).to.be.true()
-				expect(Client.get_data().sampled).to.be.false()
-				expect(Client.get_data().sampled).to.be.true()
+				expect(Client.getData().sampled).to.be.false()
+				expect(Client.getData().sampled).to.be.true()
+				expect(Client.getData().sampled).to.be.false()
+				expect(Client.getData().sampled).to.be.true()
 
 				Client.options({sampling: 1})
 				done()
@@ -70,40 +70,40 @@ describe("Zipkin client", function () {
 
 		})
 
-		describe("get_child", function () {
+		describe("getChild", function () {
 
 			it("should return data for child span", function (done) {
-				var trace_data = Client.get_child({
-					trace_id: "test trace_id",
-					span_id: "test span_id",
-					parent_span_id: "test parent_id",
+				var traceData = Client.getChild({
+					traceId: "test traceId",
+					spanId: "test spanId",
+					parentSpanId: "test parent_id",
 					sampled: true
 				})
 
-				expect(trace_data).to.include({
-					trace_id: "test trace_id",
-					parent_span_id: "test span_id",
+				expect(traceData).to.include({
+					traceId: "test traceId",
+					parentSpanId: "test spanId",
 					sampled: true
 				})
-				expect(trace_data).to.include("span_id")
+				expect(traceData).to.include("spanId")
 
 				done()
 			})
 
 			it("should carry the sampled state", function (done) {
-				var trace_data = Client.get_child({
-					trace_id: "test trace_id",
-					span_id: "test span_id",
-					parent_span_id: "test parent_id",
+				var traceData = Client.getChild({
+					traceId: "test traceId",
+					spanId: "test spanId",
+					parentSpanId: "test parent_id",
 					sampled: false
 				})
 
-				expect(trace_data.sampled).to.be.false()
+				expect(traceData.sampled).to.be.false()
 
 				done()
 			})
 
-			it("provides a camel case alias", function (done) {
+			it("provides a underscore alias", function (done) {
 				expect(Client.get_child).to.equal(Client.getChild)
 				done()
 			})
@@ -129,11 +129,11 @@ describe("Zipkin client", function () {
 			done()
 		})
 
-		describe("client_send", function () {
-			const trace_data = {
-				trace_id: "test trace_id",
-				span_id: "test span_id",
-				parent_span_id: "test parent_id",
+		describe("clientSend", function () {
+			const traceData = {
+				traceId: "test traceId",
+				spanId: "test spanId",
+				parentSpanId: "test parent_id",
 				timestamp: "test timestamp",
 				sampled: true
 			}
@@ -145,9 +145,9 @@ describe("Zipkin client", function () {
 						expect(data.url).to.equal("/api/v1/spans")
 						expect(data.body).to.be.array()
 						expect(data.body).to.include({
-							traceId: "test trace_id",
+							traceId: "test traceId",
 							name: "test name",
-							id: "test span_id",
+							id: "test spanId",
 							timestamp: "test timestamp",
 							annotations: [{
 								value: "cs",
@@ -168,7 +168,7 @@ describe("Zipkin client", function () {
 					done()
 				})
 
-				Client.client_send(trace_data, {
+				Client.clientSend(traceData, {
 					service: "test service",
 					name: "test name"
 				})
@@ -185,7 +185,7 @@ describe("Zipkin client", function () {
 					done("Shouldn't receive data")
 				})
 
-				Client.client_send({sampled: false}, {
+				Client.clientSend({sampled: false}, {
 					service: "test service",
 					name: "test name"
 				})
@@ -195,11 +195,11 @@ describe("Zipkin client", function () {
 
 		})
 
-		describe("client_recv", function () {
-			const trace_data = {
-				trace_id: "test trace_id",
-				span_id: "test span_id",
-				parent_span_id: "test parent_id",
+		describe("clientRecv", function () {
+			const traceData = {
+				traceId: "test traceId",
+				spanId: "test spanId",
+				parentSpanId: "test parent_id",
 				timestamp: "test timestamp",
 				sampled: true
 			}
@@ -211,9 +211,9 @@ describe("Zipkin client", function () {
 						expect(data.url).to.equal("/api/v1/spans")
 						expect(data.body).to.be.array()
 						expect(data.body).to.include({
-							traceId: "test trace_id",
+							traceId: "test traceId",
 							name: "test name",
-							id: "test span_id",
+							id: "test spanId",
 							timestamp: "test timestamp",
 							annotations: [{
 								value: "cr",
@@ -234,7 +234,7 @@ describe("Zipkin client", function () {
 					done()
 				})
 
-				Client.client_recv(trace_data, {
+				Client.clientRecv(traceData, {
 					service: "test service",
 					name: "test name"
 				})
@@ -248,11 +248,11 @@ describe("Zipkin client", function () {
 
 		})
 
-		describe("server_send", function () {
-			const trace_data = {
-				trace_id: "test trace_id",
-				span_id: "test span_id",
-				parent_span_id: "test parent_id",
+		describe("serverSend", function () {
+			const traceData = {
+				traceId: "test traceId",
+				spanId: "test spanId",
+				parentSpanId: "test parent_id",
 				timestamp: "test timestamp",
 				sampled: true
 			}
@@ -264,9 +264,9 @@ describe("Zipkin client", function () {
 						expect(data.url).to.equal("/api/v1/spans")
 						expect(data.body).to.be.array()
 						expect(data.body).to.include({
-							traceId: "test trace_id",
+							traceId: "test traceId",
 							name: "test name",
-							id: "test span_id",
+							id: "test spanId",
 							timestamp: "test timestamp",
 							annotations: [{
 								value: "ss",
@@ -287,7 +287,7 @@ describe("Zipkin client", function () {
 					done()
 				})
 
-				Client.server_send(trace_data, {
+				Client.serverSend(traceData, {
 					service: "test service",
 					name: "test name"
 				})
@@ -301,11 +301,11 @@ describe("Zipkin client", function () {
 
 		})
 
-		describe("server_recv", function () {
-			const trace_data = {
-				trace_id: "test trace_id",
-				span_id: "test span_id",
-				parent_span_id: "test parent_id",
+		describe("serverRecv", function () {
+			const traceData = {
+				traceId: "test traceId",
+				spanId: "test spanId",
+				parentSpanId: "test parent_id",
 				timestamp: "test timestamp",
 				sampled: true
 			}
@@ -317,9 +317,9 @@ describe("Zipkin client", function () {
 						expect(data.url).to.equal("/api/v1/spans")
 						expect(data.body).to.be.array()
 						expect(data.body).to.include({
-							traceId: "test trace_id",
+							traceId: "test traceId",
 							name: "test name",
-							id: "test span_id",
+							id: "test spanId",
 							timestamp: "test timestamp",
 							annotations: [{
 								value: "sr",
@@ -340,7 +340,7 @@ describe("Zipkin client", function () {
 					done()
 				})
 
-				Client.server_recv(trace_data, {
+				Client.serverRecv(traceData, {
 					service: "test service",
 					name: "test name"
 				})
