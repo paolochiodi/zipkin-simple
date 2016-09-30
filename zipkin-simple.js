@@ -142,19 +142,19 @@ function traceWithAnnotation (trace, data, annotation) {
 	return sendTrace(trace, data)
 }
 
-function clientSend (trace, data) {
+function sendClientSend (trace, data) {
 	return traceWithAnnotation(trace, data, "cs")
 }
 
-function clientRecv (trace, data) {
+function sendClientRecv (trace, data) {
 	return traceWithAnnotation(trace, data, "cr")
 }
 
-function serverSend (trace, data) {
+function sendServerSend (trace, data) {
 	return traceWithAnnotation(trace, data, "ss")
 }
 
-function serverRecv (trace, data) {
+function sendServerRecv (trace, data) {
 	return traceWithAnnotation(trace, data, "sr")
 }
 
@@ -171,18 +171,18 @@ module.exports = {
 
 	getData: getData,
 	getChild: getChild,
-	clientSend: clientSend,
-	clientRecv: clientRecv,
-	serverSend: serverSend,
-	serverRecv: serverRecv,
+	sendClientSend: sendClientSend,
+	sendClientRecv: sendClientRecv,
+	sendServerSend: sendServerSend,
+	sendServerRecv: sendServerRecv,
 
 
 	// underscore aliases
 
 	get_data: getData,
 	get_child: getChild,
-	client_send: clientSend,
-	client_recv: clientRecv,
-	server_send: serverSend,
-	server_recv: serverRecv
+	send_client_send: sendClientSend,
+	send_client_recv: sendClientRecv,
+	send_server_send: sendServerSend,
+	send_server_recv: sendServerRecv
 }

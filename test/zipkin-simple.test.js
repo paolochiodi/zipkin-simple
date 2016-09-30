@@ -129,7 +129,7 @@ describe("Zipkin client", function () {
 			done()
 		})
 
-		describe("clientSend", function () {
+		describe("sendClientSend", function () {
 			const traceData = {
 				traceId: "test traceId",
 				spanId: "test spanId",
@@ -168,7 +168,7 @@ describe("Zipkin client", function () {
 					done()
 				})
 
-				Client.clientSend(traceData, {
+				Client.sendClientSend(traceData, {
 					service: "test service",
 					name: "test name"
 				})
@@ -176,7 +176,7 @@ describe("Zipkin client", function () {
 			})
 
 			it("provides a camel case alias", function (done) {
-				expect(Client.client_send).to.equal(Client.clientSend)
+				expect(Client.send_client_send).to.equal(Client.sendClientSend)
 				done()
 			})
 
@@ -185,7 +185,7 @@ describe("Zipkin client", function () {
 					done("Shouldn't receive data")
 				})
 
-				Client.clientSend({sampled: false}, {
+				Client.sendClientSend({sampled: false}, {
 					service: "test service",
 					name: "test name"
 				})
@@ -195,7 +195,7 @@ describe("Zipkin client", function () {
 
 		})
 
-		describe("clientRecv", function () {
+		describe("sendClientRecv", function () {
 			const traceData = {
 				traceId: "test traceId",
 				spanId: "test spanId",
@@ -234,7 +234,7 @@ describe("Zipkin client", function () {
 					done()
 				})
 
-				Client.clientRecv(traceData, {
+				Client.sendClientRecv(traceData, {
 					service: "test service",
 					name: "test name"
 				})
@@ -242,13 +242,13 @@ describe("Zipkin client", function () {
 			})
 
 			it("provides a camel case alias", function (done) {
-				expect(Client.client_recv).to.equal(Client.clientRecv)
+				expect(Client.send_client_recv).to.equal(Client.sendClientRecv)
 				done()
 			})
 
 		})
 
-		describe("serverSend", function () {
+		describe("sendServerSend", function () {
 			const traceData = {
 				traceId: "test traceId",
 				spanId: "test spanId",
@@ -287,7 +287,7 @@ describe("Zipkin client", function () {
 					done()
 				})
 
-				Client.serverSend(traceData, {
+				Client.sendServerSend(traceData, {
 					service: "test service",
 					name: "test name"
 				})
@@ -295,13 +295,13 @@ describe("Zipkin client", function () {
 			})
 
 			it("provides a camel case alias", function (done) {
-				expect(Client.server_send).to.equal(Client.serverSend)
+				expect(Client.send_server_send).to.equal(Client.sendServerSend)
 				done()
 			})
 
 		})
 
-		describe("serverRecv", function () {
+		describe("sendServerRecv", function () {
 			const traceData = {
 				traceId: "test traceId",
 				spanId: "test spanId",
@@ -340,7 +340,7 @@ describe("Zipkin client", function () {
 					done()
 				})
 
-				Client.serverRecv(traceData, {
+				Client.sendServerRecv(traceData, {
 					service: "test service",
 					name: "test name"
 				})
@@ -348,7 +348,7 @@ describe("Zipkin client", function () {
 			})
 
 			it("provides a camel case alias", function (done) {
-				expect(Client.server_recv).to.equal(Client.serverRecv)
+				expect(Client.send_server_recv).to.equal(Client.sendServerRecv)
 				done()
 			})
 
