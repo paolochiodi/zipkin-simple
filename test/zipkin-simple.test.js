@@ -11,11 +11,16 @@ const it = lab.it
 const expect = Code.expect
 
 const FAKE_SERVER_PORT = 9090
+const TO_MICROSENCODS = 1000
 
 Client.options({
 	port: 9090,
 	sampling: 1
 })
+
+function now () {
+	return new Date().getTime() * TO_MICROSENCODS
+}
 
 describe("Zipkin client", function () {
 
@@ -134,7 +139,7 @@ describe("Zipkin client", function () {
 				traceId: "test traceId",
 				spanId: "test spanId",
 				parentSpanId: "test parent_id",
-				timestamp: new Date().getTime(),
+				timestamp: now(),
 				sampled: true
 			}
 
@@ -201,7 +206,7 @@ describe("Zipkin client", function () {
 				traceId: "test traceId",
 				spanId: "test spanId",
 				parentSpanId: "test parent_id",
-				timestamp: new Date().getTime(),
+				timestamp: now(),
 				sampled: true
 			}
 
@@ -255,7 +260,7 @@ describe("Zipkin client", function () {
 				traceId: "test traceId",
 				spanId: "test spanId",
 				parentSpanId: "test parent_id",
-				timestamp: new Date().getTime(),
+				timestamp: now(),
 				sampled: true
 			}
 
@@ -309,7 +314,7 @@ describe("Zipkin client", function () {
 				traceId: "test traceId",
 				spanId: "test spanId",
 				parentSpanId: "test parent_id",
-				timestamp: new Date().getTime(),
+				timestamp: now(),
 				sampled: true
 			}
 

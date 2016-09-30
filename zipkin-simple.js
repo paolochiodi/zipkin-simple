@@ -3,7 +3,7 @@ var Wreck = require("wreck")
 
 var HTTP_OK = 200
 var HTTP_RECEIVED = 202
-var TO_MILLISECONDS = 1000
+var TO_MICROSECONDS = 1000
 var ID_LENGTH = 16
 var ID_DIGITS = "0123456789abcdef"
 
@@ -47,7 +47,7 @@ function send (body) {
 
 function generateTimestamp () {
 	// use process.hrtime?
-	return new Date().getTime() * TO_MILLISECONDS
+	return new Date().getTime() * TO_MICROSECONDS
 }
 
 function generateId () {
