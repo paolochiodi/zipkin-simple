@@ -134,7 +134,7 @@ describe("Zipkin client", function () {
 				traceId: "test traceId",
 				spanId: "test spanId",
 				parentSpanId: "test parent_id",
-				timestamp: "test timestamp",
+				timestamp: new Date().getTime(),
 				sampled: true
 			}
 
@@ -148,7 +148,7 @@ describe("Zipkin client", function () {
 							traceId: "test traceId",
 							name: "test name",
 							id: "test spanId",
-							timestamp: "test timestamp",
+							timestamp: traceData.timestamp,
 							annotations: [{
 								value: "cs",
 								endpoint: {
@@ -160,6 +160,7 @@ describe("Zipkin client", function () {
 							binaryAnnotations: []
 						})
 						expect(data.body[0].annotations[0]).to.include("timestamp")
+						expect(data.body[0]).to.not.include("duration")
 					}
 					catch (ex) {
 						return done(ex)
@@ -200,7 +201,7 @@ describe("Zipkin client", function () {
 				traceId: "test traceId",
 				spanId: "test spanId",
 				parentSpanId: "test parent_id",
-				timestamp: "test timestamp",
+				timestamp: new Date().getTime(),
 				sampled: true
 			}
 
@@ -214,7 +215,7 @@ describe("Zipkin client", function () {
 							traceId: "test traceId",
 							name: "test name",
 							id: "test spanId",
-							timestamp: "test timestamp",
+							timestamp: traceData.timestamp,
 							annotations: [{
 								value: "cr",
 								endpoint: {
@@ -226,6 +227,7 @@ describe("Zipkin client", function () {
 							binaryAnnotations: []
 						})
 						expect(data.body[0].annotations[0]).to.include("timestamp")
+						expect(data.body[0].duration).to.equal(data.body[0].annotations[0].timestamp - traceData.timestamp)
 					}
 					catch (ex) {
 						return done(ex)
@@ -253,7 +255,7 @@ describe("Zipkin client", function () {
 				traceId: "test traceId",
 				spanId: "test spanId",
 				parentSpanId: "test parent_id",
-				timestamp: "test timestamp",
+				timestamp: new Date().getTime(),
 				sampled: true
 			}
 
@@ -267,7 +269,7 @@ describe("Zipkin client", function () {
 							traceId: "test traceId",
 							name: "test name",
 							id: "test spanId",
-							timestamp: "test timestamp",
+							timestamp: traceData.timestamp,
 							annotations: [{
 								value: "ss",
 								endpoint: {
@@ -279,6 +281,7 @@ describe("Zipkin client", function () {
 							binaryAnnotations: []
 						})
 						expect(data.body[0].annotations[0]).to.include("timestamp")
+						expect(data.body[0]).to.not.include("duration")
 					}
 					catch (ex) {
 						return done(ex)
@@ -306,7 +309,7 @@ describe("Zipkin client", function () {
 				traceId: "test traceId",
 				spanId: "test spanId",
 				parentSpanId: "test parent_id",
-				timestamp: "test timestamp",
+				timestamp: new Date().getTime(),
 				sampled: true
 			}
 
@@ -320,7 +323,7 @@ describe("Zipkin client", function () {
 							traceId: "test traceId",
 							name: "test name",
 							id: "test spanId",
-							timestamp: "test timestamp",
+							timestamp: traceData.timestamp,
 							annotations: [{
 								value: "sr",
 								endpoint: {
@@ -332,6 +335,7 @@ describe("Zipkin client", function () {
 							binaryAnnotations: []
 						})
 						expect(data.body[0].annotations[0]).to.include("timestamp")
+						expect(data.body[0]).to.not.include("duration")
 					}
 					catch (ex) {
 						return done(ex)

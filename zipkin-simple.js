@@ -103,7 +103,6 @@ function sendTrace (trace, data) {
 		return
 	}
 
-	var time = generateTimestamp()
 	var body = {
 		traceId: trace.traceId,
 		name: data.name,
@@ -117,6 +116,7 @@ function sendTrace (trace, data) {
 		body.parentId = trace.parentSpanId
 	}
 
+	var time = generateTimestamp()
 	for (var i = 0; i < data.annotations.length; i++) {
 		body.annotations.push({
 			endpoint: {
@@ -127,6 +127,10 @@ function sendTrace (trace, data) {
 			timestamp: time,
 			value: data.annotations[i]
 		})
+
+		if (data.annotations[i] === "cr") {
+			body.duration = time - trace.timestamp
+		}
 	}
 
 	send(body)
