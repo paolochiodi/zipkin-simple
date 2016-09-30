@@ -52,10 +52,10 @@ Zipkin suggest to use http headers, but you are free to use anything else.
 
 ## API
 
-We use the names "client process" and "server process" as in zipkin documentation but zipkin-simple can also be used in a single process environment or to track local methods. In this case consider "client process" as the caller method and server process as the colled method.
+We use the names "client process" and "server process" as in zipkin documentation but zipkin-simple can also be used in a single process environment or to track local methods. In this case consider "client process" as the caller method and server process as the called method.
 
-You alson don't need to send both client and server annotation, especially when tracking local methods.
-Just one of the two couples will suffice to zipkin to correctly generate the spans
+You also don't need to send both client and server annotations, especially when tracking local methods.
+Just one of the two couples will suffice to zipkin to correctly generate the spans.
 
 All methods are in "underscore" notation but provide camelCase aliases, use the one that fits your style better.
 
