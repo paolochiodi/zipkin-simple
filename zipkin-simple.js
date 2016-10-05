@@ -171,7 +171,7 @@ zipkinSimple.prototype.sendServerRecv = function sendServerRecv (trace, data) {
 	return this.traceWithAnnotation(trace, data, "sr")
 }
 
-zipkinSimple.prototype.setOptions = function setOptions (opts) {
+zipkinSimple.prototype.options = function setOptions (opts) {
 	if (opts) {
 		Object.assign(this.options, opts)
 	}
@@ -184,6 +184,5 @@ zipkinSimple.prototype.send_client_send = zipkinSimple.prototype.sendClientSend
 zipkinSimple.prototype.send_client_recv = zipkinSimple.prototype.sendClientRecv
 zipkinSimple.prototype.send_server_send = zipkinSimple.prototype.sendServerSend
 zipkinSimple.prototype.send_server_recv = zipkinSimple.prototype.sendServerRecv
-zipkinSimple.prototype.set_options = zipkinSimple.prototype.setOptions
 
 module.exports = zipkinSimple
