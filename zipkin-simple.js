@@ -7,7 +7,7 @@ var TO_MICROSECONDS = 1000
 var ID_LENGTH = 16
 var ID_DIGITS = "0123456789abcdef"
 
-var options = {
+var DEFAULT_OPTIONS = {
 	sampling: 0.1,
 	debug: false,
 	host: "127.0.0.1",
@@ -15,20 +15,7 @@ var options = {
 	path: "/api/v1/spans"
 }
 
-var counter = 0
-
-function shouldSample () {
-	counter++
-
-	if (counter * options.sampling >= 1) {
-		counter = 0
-		return true
-	}
-
-	return false
-}
-
-function send (body) {
+function send (body, options) {
 	const path = "http://" + options.host + ":" + options.port + options.path
 	Wreck.post(path, {payload: [body]}, function sent (err, response, body) {
 		if (!options.debug) {
@@ -64,21 +51,37 @@ function generateId () {
 	return n
 }
 
-function createRootTrace () {
+function zipkinSimple (options) {
+	this.counter = 0
+	this.options = Object.assign({}, DEFAULT_OPTIONS, options)
+}
+
+zipkinSimple.prototype.shouldSample = function shouldSample () {
+	this.counter++
+
+	if (this.counter * this.options.sampling >= 1) {
+		this.counter = 0
+		return true
+	}
+
+	return false
+}
+
+zipkinSimple.prototype.createRootTrace = function createRootTrace () {
 	var id = generateId()
 
 	return {
 		traceId: id,
 		spanId: id,
 		parentSpanId: null,
-		sampled: shouldSample(),
+		sampled: this.shouldSample(),
 		timestamp: generateTimestamp()
 	}
 }
 
-function getChild (traceData) {
+zipkinSimple.prototype.getChild = function getChild (traceData) {
 	if (!traceData) {
-		return createRootTrace()
+		return this.createRootTrace()
 	}
 
 	return {
@@ -90,7 +93,7 @@ function getChild (traceData) {
 	}
 }
 
-function sendTrace (trace, data) {
+zipkinSimple.prototype.sendTrace = function sendTrace (trace, data) {
 	if (!trace.sampled) {
 		return
 	}
@@ -128,12 +131,12 @@ function sendTrace (trace, data) {
 		}
 	}
 
-	send(body)
+	send(body, this.options)
 }
 
-function traceWithAnnotation (trace, data, annotation) {
+zipkinSimple.prototype.traceWithAnnotation = function traceWithAnnotation (trace, data, annotation) {
 	if (!trace) {
-		trace = createRootTrace()
+		trace = this.createRootTrace()
 	}
 
 	if (!trace.sampled) {
@@ -142,55 +145,44 @@ function traceWithAnnotation (trace, data, annotation) {
 
 	data.annotations = data.annotations || []
 	data.annotations.push(annotation)
-	sendTrace(trace, data)
+	this.sendTrace(trace, data)
 
 	return trace
 }
 
-function sendClientSend (trace, data) {
-	return traceWithAnnotation(trace, data, "cs")
+zipkinSimple.prototype.sendClientSend = function sendClientSend (trace, data) {
+	return this.traceWithAnnotation(trace, data, "cs")
 }
 
-function sendClientRecv (trace, data) {
-	return traceWithAnnotation(trace, data, "cr")
+zipkinSimple.prototype.sendClientRecv = function sendClientRecv (trace, data) {
+	return this.traceWithAnnotation(trace, data, "cr")
 }
 
-function sendServerSend (trace, data) {
-	return traceWithAnnotation(trace, data, "ss")
+zipkinSimple.prototype.sendServerSend = function sendServerSend (trace, data) {
+	return this.traceWithAnnotation(trace, data, "ss")
 }
 
-function sendServerRecv (trace, data) {
+zipkinSimple.prototype.sendServerRecv = function sendServerRecv (trace, data) {
 	if (!trace) {
-		trace = createRootTrace()
+		trace = this.createRootTrace()
 		trace.serverOnly = true
 	}
 
-	return traceWithAnnotation(trace, data, "sr")
+	return this.traceWithAnnotation(trace, data, "sr")
 }
 
-function setOptions (opts) {
+zipkinSimple.prototype.options = function setOptions (opts) {
 	if (opts) {
-		Object.assign(options, opts)
+		Object.assign(this.options, opts)
 	}
 
-	return options
+	return this.options
 }
 
-module.exports = {
-	options: setOptions,
+zipkinSimple.prototype.get_child = zipkinSimple.prototype.getChild
+zipkinSimple.prototype.send_client_send = zipkinSimple.prototype.sendClientSend
+zipkinSimple.prototype.send_client_recv = zipkinSimple.prototype.sendClientRecv
+zipkinSimple.prototype.send_server_send = zipkinSimple.prototype.sendServerSend
+zipkinSimple.prototype.send_server_recv = zipkinSimple.prototype.sendServerRecv
 
-	getChild: getChild,
-	sendClientSend: sendClientSend,
-	sendClientRecv: sendClientRecv,
-	sendServerSend: sendServerSend,
-	sendServerRecv: sendServerRecv,
-
-
-	// underscore aliases
-
-	get_child: getChild,
-	send_client_send: sendClientSend,
-	send_client_recv: sendClientRecv,
-	send_server_send: sendServerSend,
-	send_server_recv: sendServerRecv
-}
+module.exports = zipkinSimple

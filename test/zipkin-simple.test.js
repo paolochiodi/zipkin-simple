@@ -2,7 +2,7 @@
 
 const Lab = require("lab")
 const Code = require("code")
-const Client = require("..")
+const Zipkin = require("..")
 const FakeHttp = require("./fake-server")
 
 const lab = exports.lab = Lab.script()
@@ -13,7 +13,7 @@ const expect = Code.expect
 const FAKE_SERVER_PORT = 9090
 const TO_MICROSECONDS = 1000
 
-Client.options({
+const Client = new Zipkin({
 	port: 9090,
 	sampling: 1
 })

@@ -27,9 +27,8 @@ npm install zipkin-simple --save
 ## Usage
 
 ```js
-var Tracer = require('zipkin-simple')
-
-Tracer.options({
+var Zipkin = require('zipkin-simple')
+var tracer = new Zipkin({
   debug: false,
   host: "127.0.0.1",
   port: "9411",
@@ -37,7 +36,7 @@ Tracer.options({
 })
 
 var traceData
-traceData = Tracer.sendClientSend(traceData, {
+traceData = tracer.sendClientSend(traceData, {
   service: 'service name',
   name: 'endpoint name'
 })
@@ -61,7 +60,7 @@ All methods are in "underscore" notation but provide camelCase aliases, use the 
 See an usage example in [seneca-zipkin-tracer](https://github.com/senecajs-labs/seneca-zipkin-tracer)
 
 <a name="options"></a>
-### Tracer.options(opts)
+### tracer.options(opts)
 
 If opts is passed in update current options, otherwise just return existing options.
 
@@ -73,7 +72,7 @@ Options include:
 
 
 <a name="sendClientSend"></a>
-### Tracer.sendClientSend(traceData, annotationData)
+### tracer.sendClientSend(traceData, annotationData)
 
 Add the `cs` annotation to the current span (and trace).
 
@@ -89,7 +88,7 @@ Annotation Data contains additional info about the current method:
 - name: the name of the method being tracked, i.e.: `POST /user` or `update_credentials`. Thi will be displayed in the zipking console on the single span
 
 <a name="sendClientReceive"></a>
-### Tracer.sendClientReceive(traceData, annotationData)
+### tracer.sendClientReceive(traceData, annotationData)
 
 Add the `cr` annotation to the current span (and trace).
 
@@ -101,7 +100,7 @@ Both traceData and annotationData are mandatory.
 
 
 <a name="sendServerReceive"></a>
-### Tracer.sendServerReceive(traceData, annotationData)
+### tracer.sendServerReceive(traceData, annotationData)
 
 Add the `sr` to the current span (and trace).
 
@@ -112,7 +111,7 @@ Whilest annotationData is mandatory, traceData can be null: in that case a new r
 [For details about annotationData see here](#annotationData)
 
 <a name="sendServerSend"></a>
-### Tracer.sendServerSend(traceData, annotationData)
+### tracer.sendServerSend(traceData, annotationData)
 
 Add the `ss` to the current span (and trace).
 
@@ -123,7 +122,7 @@ Both traceData and annotationData are mandatory.
 [For details about annotationData see here](#annotationData)
 
 <a name="getChild"></a>
-### Tracer.getChild(traceData)
+### tracer.getChild(traceData)
 
 Return trace data to be sent alongside the next child request.
 
