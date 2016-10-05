@@ -37,7 +37,7 @@ Tracer.options({
 })
 
 var traceData
-traceData = Tracer.clientSend(traceData, {
+traceData = Tracer.sendClientSend(traceData, {
   service: 'service name',
   name: 'endpoint name'
 })
@@ -72,8 +72,8 @@ Options include:
 - path: the endpoint where to send data on the zipkin server (if uncertain, leave the default unchanged)
 
 
-<a name="clientSend"></a>
-### Tracer.clientSend(traceData, annotationData)
+<a name="sendClientSend"></a>
+### Tracer.sendClientSend(traceData, annotationData)
 
 Add the `cs` annotation to the current span (and trace).
 
@@ -88,8 +88,8 @@ Annotation Data contains additional info about the current method:
 - service: the name of the current service. It should be an identifier of running process (or class of processes), i.e.: `web_server`, `background_worker`, `checkout_process`. This will be displayed in the zipkin console
 - name: the name of the method being tracked, i.e.: `POST /user` or `update_credentials`. Thi will be displayed in the zipking console on the single span
 
-<a name="clientReceive"></a>
-### Tracer.clientReceive(traceData, annotationData)
+<a name="sendClientReceive"></a>
+### Tracer.sendClientReceive(traceData, annotationData)
 
 Add the `cr` annotation to the current span (and trace).
 
@@ -100,8 +100,8 @@ Both traceData and annotationData are mandatory.
 [For details about annotationData see here](#annotationData)
 
 
-<a name="serverReceive"></a>
-### Tracer.serverReceive(traceData, annotationData)
+<a name="sendServerReceive"></a>
+### Tracer.sendServerReceive(traceData, annotationData)
 
 Add the `sr` to the current span (and trace).
 
@@ -111,8 +111,8 @@ Whilest annotationData is mandatory, traceData can be null: in that case a new r
 
 [For details about annotationData see here](#annotationData)
 
-<a name="serverSend"></a>
-### Tracer.serverSend(traceData, annotationData)
+<a name="sendServerSend"></a>
+### Tracer.sendServerSend(traceData, annotationData)
 
 Add the `ss` to the current span (and trace).
 
