@@ -3,7 +3,7 @@ var Wreck = require("wreck")
 
 var HTTP_OK = 200
 var HTTP_RECEIVED = 202
-var TO_MILLISECONDS = 1000
+var TO_MICROSECONDS = 1000
 var ID_LENGTH = 16
 var ID_DIGITS = "0123456789abcdef"
 
@@ -47,7 +47,7 @@ function send (body) {
 
 function generateTimestamp () {
 	// use process.hrtime?
-	return new Date().getTime() * TO_MILLISECONDS
+	return new Date().getTime() * TO_MICROSECONDS
 }
 
 function generateId () {
@@ -76,14 +76,6 @@ function createRootTrace () {
 	}
 }
 
-function getData (traceData) {
-	if (!traceData) {
-		return createRootTrace()
-	}
-
-	return traceData
-}
-
 function getChild (traceData) {
 	if (!traceData) {
 		return createRootTrace()
@@ -103,12 +95,10 @@ function sendTrace (trace, data) {
 		return
 	}
 
-	var time = generateTimestamp()
 	var body = {
 		traceId: trace.traceId,
 		name: data.name,
 		id: trace.spanId,
-		timestamp: trace.timestamp,
 		annotations: [],
 		binaryAnnotations: []
 	}
@@ -117,6 +107,7 @@ function sendTrace (trace, data) {
 		body.parentId = trace.parentSpanId
 	}
 
+	var time = generateTimestamp()
 	for (var i = 0; i < data.annotations.length; i++) {
 		body.annotations.push({
 			endpoint: {
@@ -127,34 +118,53 @@ function sendTrace (trace, data) {
 			timestamp: time,
 			value: data.annotations[i]
 		})
+
+		if (data.annotations[i] === "cr" || (data.annotations[i] === "ss" && trace.serverOnly)) {
+			body.duration = time - trace.timestamp
+		}
+
+		if (data.annotations[i] === "cs" || (data.annotations[i] === "sr" && trace.serverOnly)) {
+			body.timestamp = trace.timestamp || generateTimestamp()
+		}
 	}
 
 	send(body)
 }
 
 function traceWithAnnotation (trace, data, annotation) {
+	if (!trace) {
+		trace = createRootTrace()
+	}
+
 	if (!trace.sampled) {
-		return
+		return trace
 	}
 
 	data.annotations = data.annotations || []
 	data.annotations.push(annotation)
-	return sendTrace(trace, data)
+	sendTrace(trace, data)
+
+	return trace
 }
 
-function clientSend (trace, data) {
+function sendClientSend (trace, data) {
 	return traceWithAnnotation(trace, data, "cs")
 }
 
-function clientRecv (trace, data) {
+function sendClientRecv (trace, data) {
 	return traceWithAnnotation(trace, data, "cr")
 }
 
-function serverSend (trace, data) {
+function sendServerSend (trace, data) {
 	return traceWithAnnotation(trace, data, "ss")
 }
 
-function serverRecv (trace, data) {
+function sendServerRecv (trace, data) {
+	if (!trace) {
+		trace = createRootTrace()
+		trace.serverOnly = true
+	}
+
 	return traceWithAnnotation(trace, data, "sr")
 }
 
@@ -169,20 +179,18 @@ function setOptions (opts) {
 module.exports = {
 	options: setOptions,
 
-	getData: getData,
 	getChild: getChild,
-	clientSend: clientSend,
-	clientRecv: clientRecv,
-	serverSend: serverSend,
-	serverRecv: serverRecv,
+	sendClientSend: sendClientSend,
+	sendClientRecv: sendClientRecv,
+	sendServerSend: sendServerSend,
+	sendServerRecv: sendServerRecv,
 
 
 	// underscore aliases
 
-	get_data: getData,
 	get_child: getChild,
-	client_send: clientSend,
-	client_recv: clientRecv,
-	server_send: serverSend,
-	server_recv: serverRecv
+	send_client_send: sendClientSend,
+	send_client_recv: sendClientRecv,
+	send_server_send: sendServerSend,
+	send_server_recv: sendServerRecv
 }
