@@ -11,7 +11,7 @@ const it = lab.it
 const expect = Code.expect
 
 const FAKE_SERVER_PORT = 9090
-const TO_MICROSENCODS = 1000
+const TO_MICROSECONDS = 1000
 
 Client.options({
 	port: 9090,
@@ -19,7 +19,7 @@ Client.options({
 })
 
 function now () {
-	return new Date().getTime() * TO_MICROSENCODS
+	return new Date().getTime() * TO_MICROSECONDS
 }
 
 describe("Zipkin client", function () {
