@@ -1,3 +1,4 @@
+"use strict"
 
 const Http = require("http")
 const EventEmitter = require("events")

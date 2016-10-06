@@ -1,3 +1,5 @@
+"use strict"
+
 const Lab = require("lab")
 const Code = require("code")
 const Transport = require("../../transports/http-simple")

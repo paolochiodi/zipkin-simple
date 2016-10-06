@@ -1,3 +1,4 @@
+"use strict"
 
 var HttpSimpleTransport = require("./transports/http-simple")
 
