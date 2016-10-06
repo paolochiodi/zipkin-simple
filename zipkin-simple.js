@@ -53,13 +53,26 @@ function generateId () {
 
 function zipkinSimple (options) {
 	this.counter = 0
-	this.options = Object.assign({}, DEFAULT_OPTIONS, options)
+	this.opts = Object.assign({}, DEFAULT_OPTIONS, options)
+	this.buildOptions()
+}
+
+zipkinSimple.prototype.buildOptions = function buildOptions () {
+	this.send = send
+
+	if (this.opts.transport === "http-simple") {
+		this.send = send
+	}
+
+	if (typeof this.opts.transport === "function") {
+		this.send = this.opts.transport
+	}
 }
 
 zipkinSimple.prototype.shouldSample = function shouldSample () {
 	this.counter++
 
-	if (this.counter * this.options.sampling >= 1) {
+	if (this.counter * this.opts.sampling >= 1) {
 		this.counter = 0
 		return true
 	}
@@ -131,7 +144,7 @@ zipkinSimple.prototype.sendTrace = function sendTrace (trace, data) {
 		}
 	}
 
-	send(body, this.options)
+	this.send(body, this.opts)
 }
 
 zipkinSimple.prototype.traceWithAnnotation = function traceWithAnnotation (trace, data, annotation) {
@@ -173,10 +186,11 @@ zipkinSimple.prototype.sendServerRecv = function sendServerRecv (trace, data) {
 
 zipkinSimple.prototype.options = function setOptions (opts) {
 	if (opts) {
-		Object.assign(this.options, opts)
+		Object.assign(this.opts, opts)
+		this.buildOptions()
 	}
 
-	return this.options
+	return this.opts
 }
 
 zipkinSimple.prototype.get_child = zipkinSimple.prototype.getChild

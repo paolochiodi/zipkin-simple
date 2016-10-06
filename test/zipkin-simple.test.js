@@ -24,6 +24,30 @@ function now () {
 
 describe("Zipkin client", function () {
 
+	describe("options", function () {
+
+		it("is possible to swap transport", function (done) {
+
+			function dummyTransport (data) {
+				expect(data).to.include(["traceId", "name", "id", "annotations"])
+				Client.options({transport: "http"})
+				done()
+			}
+
+			Client.options({
+				transport: dummyTransport
+			})
+
+			Client.sendClientSend(null, {
+				service: "test service",
+				name: "test name"
+			})
+
+		})
+
+
+	})
+
 	describe("Trace data manipulation", function () {
 
 		describe("getChild", function () {
