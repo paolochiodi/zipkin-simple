@@ -1,6 +1,7 @@
 "use strict"
 
 var HttpSimpleTransport = require("./transports/http-simple")
+var HttpBatchTransport = require("./transports/http-batch")
 
 var TO_MICROSECONDS = 1000
 var ID_LENGTH = 16
@@ -41,7 +42,7 @@ function zipkinSimple (options) {
 }
 
 zipkinSimple.prototype.buildOptions = function buildOptions () {
-	this.send = HttpSimpleTransport
+	this.send = HttpBatchTransport
 
 	if (this.opts.transport === "http-simple") {
 		this.send = HttpSimpleTransport

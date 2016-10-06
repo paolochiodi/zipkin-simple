@@ -46,6 +46,19 @@ describe("Zipkin client", function () {
 
 		})
 
+		it("it cant sets to http batch transport", function (done) {
+			Client.options({transport: "http"})
+			expect(Client.send.name).to.equal("httpBatchTransport")
+
+			done()
+		})
+
+		it("it cant sets to http simple transport", function (done) {
+			Client.options({transport: "http-simple"})
+			expect(Client.send.name).to.equal("httpSimpleTransport")
+
+			done()
+		})
 
 	})
 
