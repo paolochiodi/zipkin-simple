@@ -1,8 +1,6 @@
 
-var Wreck = require("wreck")
+var HttpSimpleTransport = require("./transports/http-simple")
 
-var HTTP_OK = 200
-var HTTP_RECEIVED = 202
 var TO_MICROSECONDS = 1000
 var ID_LENGTH = 16
 var ID_DIGITS = "0123456789abcdef"
@@ -15,22 +13,6 @@ var DEFAULT_OPTIONS = {
 	path: "/api/v1/spans"
 }
 
-function send (body, options) {
-	const path = "http://" + options.host + ":" + options.port + options.path
-	Wreck.post(path, {payload: [body]}, function sent (err, response, body) {
-		if (!options.debug) {
-			return
-		}
-
-		if (err) {
-			return console.log("An error occurred sending trace data", err)
-		}
-
-		if (response.statusCode !== HTTP_OK && response.statusCode !== HTTP_RECEIVED) {
-			return console.log("Server returned an error:", response.statusCode, "\n", body)
-		}
-	})
-}
 
 function generateTimestamp () {
 	// use process.hrtime?
@@ -58,10 +40,10 @@ function zipkinSimple (options) {
 }
 
 zipkinSimple.prototype.buildOptions = function buildOptions () {
-	this.send = send
+	this.send = HttpSimpleTransport
 
 	if (this.opts.transport === "http-simple") {
-		this.send = send
+		this.send = HttpSimpleTransport
 	}
 
 	if (typeof this.opts.transport === "function") {
