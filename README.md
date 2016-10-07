@@ -14,9 +14,7 @@ Focus of this version is being easier to use and having a more idiomatic api.
 
 - Only http transport
 - Only standard annotations (client send, client receive, server send and server receive)
-- Requests are not batched
 
-This features will probably be added in the near future (with the exclusion of other transports)
 
 ## Install
 
@@ -48,6 +46,27 @@ This means that it's up to you on how to store the trace data and how to sync th
 
 Zipkin suggest to use http headers, but you are free to use anything else.
 
+## Transports
+
+At the current version zipkin-simple only support three type of transports: http, http-simple, custom function
+
+Http sends traces via http in batches of configurable sizes, in order to decrease the traffic to the zipkin server. This is the default
+
+Http-simple sends a request for each trace "update" (i.e. adding a new trace) and thus is not suited for production environments
+
+You can also pass in a custom function that will be used as the transport. It will receive a call every time there's a trace update with the trace data and the current zipking options:
+
+```
+tracer.options({
+  transport: function dummy(data, options) {
+    console.log(data)
+  }
+})
+```
+In this example each trace update will be logged on the console instead of being sent to zipkin.
+
+Another example can be found in the tests.
+
 ## API
 
 We use the names "client process" and "server process" as in zipkin documentation but zipkin-simple can also be used in a single process environment or to track local methods. In this case consider "client process" as the caller method and server process as the called method.
@@ -69,6 +88,10 @@ Options include:
 - host: the hostname or ip address for the zipkin server
 - port: the port for the http transport of the zipkin server
 - path: the endpoint where to send data on the zipkin server (if uncertain, leave the default unchanged)
+- sampling: the sampling ratio, from 0 to 1 (0 means don't send data, 1 send all data)
+- transport: which transport to use. Currently supported are "html" (default), "html-simple" or a custom function. Each transport may have additional options available
+- batchSize: for http transport only, size of the batch of traces to send to zipkin
+- batchTimeout: for http transport only, inactivity time before sending uncompleted batches to zipkin
 
 
 <a name="sendClientSend"></a>
