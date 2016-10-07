@@ -1,6 +1,6 @@
 {
   "name": "zipkin-simple",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A simple node.js client for zipkin tracing system",
   "author": "Paolo Chiodi (https://github.com/paolochiodi)",
   "license": "MIT",
