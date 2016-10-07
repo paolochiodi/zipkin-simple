@@ -1,8 +1,8 @@
+"use strict"
 
-var Wreck = require("wreck")
+var HttpSimpleTransport = require("./transports/http-simple")
+var HttpBatchTransport = require("./transports/http-batch")
 
-var HTTP_OK = 200
-var HTTP_RECEIVED = 202
 var TO_MICROSECONDS = 1000
 var ID_LENGTH = 16
 var ID_DIGITS = "0123456789abcdef"
@@ -15,22 +15,6 @@ var DEFAULT_OPTIONS = {
 	path: "/api/v1/spans"
 }
 
-function send (body, options) {
-	const path = "http://" + options.host + ":" + options.port + options.path
-	Wreck.post(path, {payload: [body]}, function sent (err, response, body) {
-		if (!options.debug) {
-			return
-		}
-
-		if (err) {
-			return console.log("An error occurred sending trace data", err)
-		}
-
-		if (response.statusCode !== HTTP_OK && response.statusCode !== HTTP_RECEIVED) {
-			return console.log("Server returned an error:", response.statusCode, "\n", body)
-		}
-	})
-}
 
 function generateTimestamp () {
 	// use process.hrtime?
@@ -53,13 +37,26 @@ function generateId () {
 
 function zipkinSimple (options) {
 	this.counter = 0
-	this.options = Object.assign({}, DEFAULT_OPTIONS, options)
+	this.opts = Object.assign({}, DEFAULT_OPTIONS, options)
+	this.buildOptions()
+}
+
+zipkinSimple.prototype.buildOptions = function buildOptions () {
+	this.send = HttpBatchTransport
+
+	if (this.opts.transport === "http-simple") {
+		this.send = HttpSimpleTransport
+	}
+
+	if (typeof this.opts.transport === "function") {
+		this.send = this.opts.transport
+	}
 }
 
 zipkinSimple.prototype.shouldSample = function shouldSample () {
 	this.counter++
 
-	if (this.counter * this.options.sampling >= 1) {
+	if (this.counter * this.opts.sampling >= 1) {
 		this.counter = 0
 		return true
 	}
@@ -131,7 +128,7 @@ zipkinSimple.prototype.sendTrace = function sendTrace (trace, data) {
 		}
 	}
 
-	send(body, this.options)
+	this.send(body, this.opts)
 }
 
 zipkinSimple.prototype.traceWithAnnotation = function traceWithAnnotation (trace, data, annotation) {
@@ -173,10 +170,11 @@ zipkinSimple.prototype.sendServerRecv = function sendServerRecv (trace, data) {
 
 zipkinSimple.prototype.options = function setOptions (opts) {
 	if (opts) {
-		Object.assign(this.options, opts)
+		Object.assign(this.opts, opts)
+		this.buildOptions()
 	}
 
-	return this.options
+	return this.opts
 }
 
 zipkinSimple.prototype.get_child = zipkinSimple.prototype.getChild

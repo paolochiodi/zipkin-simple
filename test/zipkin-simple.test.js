@@ -3,26 +3,64 @@
 const Lab = require("lab")
 const Code = require("code")
 const Zipkin = require("..")
-const FakeHttp = require("./fake-server")
 
 const lab = exports.lab = Lab.script()
 const describe = lab.describe
 const it = lab.it
 const expect = Code.expect
 
-const FAKE_SERVER_PORT = 9090
 const TO_MICROSECONDS = 1000
 
-const Client = new Zipkin({
-	port: 9090,
-	sampling: 1
-})
+const Client = new Zipkin({sampling: 1})
 
 function now () {
 	return new Date().getTime() * TO_MICROSECONDS
 }
 
+function noop () {}
+
 describe("Zipkin client", function () {
+
+	lab.beforeEach(function resetTransport (done) {
+		Client.options({transport: noop})
+		done()
+	})
+
+	describe("options", function () {
+
+		it("is possible to swap transport", function (done) {
+
+			function dummyTransport (data) {
+				expect(data).to.include(["traceId", "name", "id", "annotations"])
+				done()
+			}
+
+			Client.options({
+				transport: dummyTransport
+			})
+
+			Client.sendClientSend(null, {
+				service: "test service",
+				name: "test name"
+			})
+
+		})
+
+		it("it cant sets to http batch transport", function (done) {
+			Client.options({transport: "http"})
+			expect(Client.send.name).to.equal("httpBatchTransport")
+
+			done()
+		})
+
+		it("it cant sets to http simple transport", function (done) {
+			Client.options({transport: "http-simple"})
+			expect(Client.send.name).to.equal("httpSimpleTransport")
+
+			done()
+		})
+
+	})
 
 	describe("Trace data manipulation", function () {
 
@@ -94,21 +132,6 @@ describe("Zipkin client", function () {
 	})
 
 	describe("Standard annotations", function () {
-		let fakeHttp
-
-		lab.before(function (done) {
-			fakeHttp = FakeHttp(FAKE_SERVER_PORT, done)
-		})
-
-		lab.beforeEach(function (done) {
-			fakeHttp.reset()
-			done()
-		})
-
-		lab.after(function (done) {
-			fakeHttp.stop()
-			done()
-		})
 
 		describe("sendClientSend", function () {
 			const traceData = {
@@ -121,11 +144,9 @@ describe("Zipkin client", function () {
 
 			it("sends data to zipkin", function (done) {
 
-				fakeHttp.on("request", function (data) {
+				function testTransport (data) {
 					try {
-						expect(data.url).to.equal("/api/v1/spans")
-						expect(data.body).to.be.array()
-						expect(data.body).to.include({
+						expect(data).to.include({
 							traceId: "test traceId",
 							name: "test name",
 							id: "test spanId",
@@ -140,16 +161,17 @@ describe("Zipkin client", function () {
 							}],
 							binaryAnnotations: []
 						})
-						expect(data.body[0].annotations[0]).to.include("timestamp")
-						expect(data.body[0]).to.not.include("duration")
+						expect(data.annotations[0]).to.include("timestamp")
+						expect(data).to.not.include("duration")
 					}
 					catch (ex) {
 						return done(ex)
 					}
 
 					done()
-				})
+				}
 
+				Client.options({transport: testTransport})
 				Client.sendClientSend(traceData, {
 					service: "test service",
 					name: "test name"
@@ -171,10 +193,11 @@ describe("Zipkin client", function () {
 			})
 
 			it("should not send data for not sampled traces", function (done) {
-				fakeHttp.on("request", function (data) {
+				function testTransport () {
 					done("Shouldn't receive data")
-				})
+				}
 
+				Client.options({transport: testTransport})
 				Client.sendClientSend({sampled: false}, {
 					service: "test service",
 					name: "test name"
@@ -201,11 +224,9 @@ describe("Zipkin client", function () {
 
 			it("sends data to zipkin", function (done) {
 
-				fakeHttp.on("request", function (data) {
+				function testTransport (data) {
 					try {
-						expect(data.url).to.equal("/api/v1/spans")
-						expect(data.body).to.be.array()
-						expect(data.body).to.include({
+						expect(data).to.include({
 							traceId: "test traceId",
 							name: "test name",
 							id: "test spanId",
@@ -219,17 +240,18 @@ describe("Zipkin client", function () {
 							}],
 							binaryAnnotations: []
 						})
-						expect(data.body[0]).to.not.include("timestamp")
-						expect(data.body[0].annotations[0]).to.include("timestamp")
-						expect(data.body[0].duration).to.equal(data.body[0].annotations[0].timestamp - traceData.timestamp)
+						expect(data).to.not.include("timestamp")
+						expect(data.annotations[0]).to.include("timestamp")
+						expect(data.duration).to.equal(data.annotations[0].timestamp - traceData.timestamp)
 					}
 					catch (ex) {
 						return done(ex)
 					}
 
 					done()
-				})
+				}
 
+				Client.options({transport: testTransport})
 				Client.sendClientRecv(traceData, {
 					service: "test service",
 					name: "test name"
@@ -255,11 +277,9 @@ describe("Zipkin client", function () {
 
 			it("sends data to zipkin", function (done) {
 
-				fakeHttp.on("request", function (data) {
+				function testTransport (data) {
 					try {
-						expect(data.url).to.equal("/api/v1/spans")
-						expect(data.body).to.be.array()
-						expect(data.body).to.include({
+						expect(data).to.include({
 							traceId: "test traceId",
 							name: "test name",
 							id: "test spanId",
@@ -273,17 +293,18 @@ describe("Zipkin client", function () {
 							}],
 							binaryAnnotations: []
 						})
-						expect(data.body[0]).to.not.include("timestamp")
-						expect(data.body[0].annotations[0]).to.include("timestamp")
-						expect(data.body[0]).to.not.include("duration")
+						expect(data).to.not.include("timestamp")
+						expect(data.annotations[0]).to.include("timestamp")
+						expect(data).to.not.include("duration")
 					}
 					catch (ex) {
 						return done(ex)
 					}
 
 					done()
-				})
+				}
 
+				Client.options({transport: testTransport})
 				Client.sendServerSend(traceData, {
 					service: "test service",
 					name: "test name"
@@ -301,11 +322,9 @@ describe("Zipkin client", function () {
 					serverOnly: true
 				}
 
-				fakeHttp.on("request", function (data) {
+				function testTransport (data) {
 					try {
-						expect(data.url).to.equal("/api/v1/spans")
-						expect(data.body).to.be.array()
-						expect(data.body).to.include({
+						expect(data).to.include({
 							traceId: "test traceId",
 							name: "test name",
 							id: "test spanId",
@@ -319,17 +338,18 @@ describe("Zipkin client", function () {
 							}],
 							binaryAnnotations: []
 						})
-						expect(data.body[0]).to.not.include("timestamp")
-						expect(data.body[0].annotations[0]).to.include("timestamp")
-						expect(data.body[0].duration).to.equal(data.body[0].annotations[0].timestamp - traceData.timestamp)
+						expect(data).to.not.include("timestamp")
+						expect(data.annotations[0]).to.include("timestamp")
+						expect(data.duration).to.equal(data.annotations[0].timestamp - traceData.timestamp)
 					}
 					catch (ex) {
 						return done(ex)
 					}
 
 					done()
-				})
+				}
 
+				Client.options({transport: testTransport})
 				Client.sendServerSend(traceData, {
 					service: "test service",
 					name: "test name"
@@ -355,11 +375,9 @@ describe("Zipkin client", function () {
 
 			it("sends data to zipkin", function (done) {
 
-				fakeHttp.on("request", function (data) {
+				function testTransport (data) {
 					try {
-						expect(data.url).to.equal("/api/v1/spans")
-						expect(data.body).to.be.array()
-						expect(data.body).to.include({
+						expect(data).to.include({
 							traceId: "test traceId",
 							name: "test name",
 							id: "test spanId",
@@ -373,17 +391,18 @@ describe("Zipkin client", function () {
 							}],
 							binaryAnnotations: []
 						})
-						expect(data.body[0]).to.not.include("timestamp")
-						expect(data.body[0].annotations[0]).to.include("timestamp")
-						expect(data.body[0]).to.not.include("duration")
+						expect(data).to.not.include("timestamp")
+						expect(data.annotations[0]).to.include("timestamp")
+						expect(data).to.not.include("duration")
 					}
 					catch (ex) {
 						return done(ex)
 					}
 
 					done()
-				})
+				}
 
+				Client.options({transport: testTransport})
 				Client.sendServerRecv(traceData, {
 					service: "test service",
 					name: "test name"
@@ -393,11 +412,9 @@ describe("Zipkin client", function () {
 
 			it("sends timestamp and creates a serverOnly trace if no trace passed in", function (done) {
 
-				fakeHttp.on("request", function (data) {
+				function testTransport (data) {
 					try {
-						expect(data.url).to.equal("/api/v1/spans")
-						expect(data.body).to.be.array()
-						expect(data.body).to.include({
+						expect(data).to.include({
 							name: "test name",
 							annotations: [{
 								value: "sr",
@@ -409,17 +426,18 @@ describe("Zipkin client", function () {
 							}],
 							binaryAnnotations: []
 						})
-						expect(data.body[0]).to.include("timestamp")
-						expect(data.body[0].annotations[0]).to.include("timestamp")
-						expect(data.body[0]).to.not.include("duration")
+						expect(data).to.include("timestamp")
+						expect(data.annotations[0]).to.include("timestamp")
+						expect(data).to.not.include("duration")
 					}
 					catch (ex) {
 						return done(ex)
 					}
 
 					done()
-				})
+				}
 
+				Client.options({transport: testTransport})
 				const data = Client.sendServerRecv(null, {
 					service: "test service",
 					name: "test name"
