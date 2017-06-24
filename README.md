@@ -108,7 +108,7 @@ The methods return a new or updated `traceData` to be used for further calls
 <a name="annotationData"></a>
 Annotation Data contains additional info about the current method:
 - service: the name of the current service. It should be an identifier of running process (or class of processes), i.e.: `web_server`, `background_worker`, `checkout_process`. This will be displayed in the zipkin console
-- name: the name of the method being tracked, i.e.: `POST /user` or `update_credentials`. Thi will be displayed in the zipking console on the single span
+- name: the name of the method being tracked, i.e.: `POST /user` or `update_credentials`. This will be displayed in the zipking console on the single span
 
 <a name="sendClientReceive"></a>
 ### tracer.sendClientReceive(traceData, annotationData)
