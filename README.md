@@ -110,7 +110,7 @@ Annotation Data contains additional info about the current method:
 - service: the name of the current service. It should be an identifier of running process (or class of processes), i.e.: `web_server`, `background_worker`, `checkout_process`. This will be displayed in the zipkin console
 - name: the name of the method being tracked, i.e.: `POST /user` or `update_credentials`. This will be displayed in the zipking console on the single span
 
-<a name="sendClientReceive"></a>
+<a name="sendClientRecv"></a>
 ### tracer.sendClientReceive(traceData, annotationData)
 
 Add the `cr` annotation to the current span (and trace).
@@ -122,7 +122,7 @@ Both traceData and annotationData are mandatory.
 [For details about annotationData see here](#annotationData)
 
 
-<a name="sendServerReceive"></a>
+<a name="sendServerRecv"></a>
 ### tracer.sendServerReceive(traceData, annotationData)
 
 Add the `sr` to the current span (and trace).
