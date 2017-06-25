@@ -74,7 +74,7 @@ We use the names "client process" and "server process" as in zipkin documentatio
 You also don't need to send both client and server annotations, especially when tracking local methods.
 Just one of the two couples will suffice to zipkin to correctly generate the spans.
 
-All methods are in "underscore" notation but provide camelCase aliases, use the one that fits your style better.
+All methods are in camelCase but provide "underscore" notation aliases, use the one that fits your style better.
 
 See an usage example in [seneca-zipkin-tracer](https://github.com/senecajs-labs/seneca-zipkin-tracer)
 
