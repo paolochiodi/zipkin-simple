@@ -74,7 +74,7 @@ We use the names "client process" and "server process" as in zipkin documentatio
 You also don't need to send both client and server annotations, especially when tracking local methods.
 Just one of the two couples will suffice to zipkin to correctly generate the spans.
 
-All methods are in "underscore" notation but provide camelCase aliases, use the one that fits your style better.
+All methods are in camelCase but provide "underscore" notation aliases, use the one that fits your style better.
 
 See an usage example in [seneca-zipkin-tracer](https://github.com/senecajs-labs/seneca-zipkin-tracer)
 
@@ -108,9 +108,9 @@ The methods return a new or updated `traceData` to be used for further calls
 <a name="annotationData"></a>
 Annotation Data contains additional info about the current method:
 - service: the name of the current service. It should be an identifier of running process (or class of processes), i.e.: `web_server`, `background_worker`, `checkout_process`. This will be displayed in the zipkin console
-- name: the name of the method being tracked, i.e.: `POST /user` or `update_credentials`. Thi will be displayed in the zipking console on the single span
+- name: the name of the method being tracked, i.e.: `POST /user` or `update_credentials`. This will be displayed in the zipking console on the single span
 
-<a name="sendClientReceive"></a>
+<a name="sendClientRecv"></a>
 ### tracer.sendClientReceive(traceData, annotationData)
 
 Add the `cr` annotation to the current span (and trace).
@@ -122,7 +122,7 @@ Both traceData and annotationData are mandatory.
 [For details about annotationData see here](#annotationData)
 
 
-<a name="sendServerReceive"></a>
+<a name="sendServerRecv"></a>
 ### tracer.sendServerReceive(traceData, annotationData)
 
 Add the `sr` to the current span (and trace).
